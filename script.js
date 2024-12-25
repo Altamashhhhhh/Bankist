@@ -89,4 +89,11 @@ const displayTransaction = (transaction) => {
   });
 };
 displayTransaction(account1.movements);
+
+const calcBalanceDisplay = acc => {
+  const balance = acc.movements.reduce((acc, curr)=>acc + curr , 0)
+  labelBalance.innerText = `${balance} €`
+}
+
+calcBalanceDisplay(account1)
 /////////////////////////////////////////////////

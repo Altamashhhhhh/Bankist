@@ -94,6 +94,20 @@ const calcBalanceDisplay = acc => {
   const balance = acc.movements.reduce((acc, curr)=>acc + curr , 0)
   labelBalance.innerText = `${balance} €`
 }
-
 calcBalanceDisplay(account1)
+
+const calcBalanceSummary = account => {
+  const income = account.movements.filter(bal => bal > 0).reduce((acc, curr )=> acc + curr , 0 )
+  labelSumIn.textContent = `${income}€`
+
+  const out = account.movements.filter(bal => bal < 0 ).reduce((acc, curr)=>acc+curr,0)
+  labelSumOut.textContent = `${Math.abs(out)}€`
+
+  const interest = account.movements.filter(bal => bal > 0 ).map(bal => bal * 1.2 / 100 ).filter(bal => bal >= 1 ).reduce((acc,curr)=> acc+curr , 0 )
+  console.log(interest)
+  labelSumInterest.textContent = `${interest}€`
+}
+
+calcBalanceSummary(account1)
+
 /////////////////////////////////////////////////

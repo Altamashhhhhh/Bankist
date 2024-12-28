@@ -73,6 +73,12 @@ const currencies = new Map([
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+// Add Usernames in Accounts
+
+accounts.forEach(acc => {
+  acc.username =  acc.owner.split(" ").map(name => name[0]).join("").toLowerCase()
+})
+
 // containerMovements
 
 const displayTransaction = (transaction) => {
@@ -88,13 +94,13 @@ const displayTransaction = (transaction) => {
     containerMovements.insertAdjacentHTML("afterbegin", html);
   });
 };
-displayTransaction(account1.movements);
+
 
 const calcBalanceDisplay = acc => {
   const balance = acc.movements.reduce((acc, curr)=>acc + curr , 0)
   labelBalance.innerText = `${balance} €`
 }
-calcBalanceDisplay(account1)
+
 
 const calcBalanceSummary = account => {
   const income = account.movements.filter(bal => bal > 0).reduce((acc, curr )=> acc + curr , 0 )
@@ -103,11 +109,37 @@ const calcBalanceSummary = account => {
   const out = account.movements.filter(bal => bal < 0 ).reduce((acc, curr)=>acc+curr,0)
   labelSumOut.textContent = `${Math.abs(out)}€`
 
-  const interest = account.movements.filter(bal => bal > 0 ).map(bal => bal * 1.2 / 100 ).filter(bal => bal >= 1 ).reduce((acc,curr)=> acc+curr , 0 )
-  console.log(interest)
+  const interest = account.movements.filter(bal => bal > 0 ).map(bal => bal * account.interestRate / 100 ).filter(bal => bal >= 1 ).reduce((acc,curr)=> acc+curr , 0 ) ; 
   labelSumInterest.textContent = `${interest}€`
 }
 
-calcBalanceSummary(account1)
+
+
+btnLogin.addEventListener("click" , (e)=>{
+  e.preventDefault() ; 
+
+  containerApp.style.opacity = 100; 
+  inputLoginPin.blur()
+  
+  // Display UI
+  const currentUser = accounts.find(acc => acc.username === inputLoginUsername.value)
+  console.log(currentUser)
+  if(currentUser?.pin === Number(inputLoginPin.value)){
+    console.log("Login Successfull")
+  }else{
+    console.log("Login Denied")
+    containerApp.style.opacity = 0 ; 
+  }
+  
+  inputLoginPin.value = inputLoginUsername.value = " "
+  // Calculate Balance
+  calcBalanceDisplay(currentUser)
+
+  // Calculate Summary 
+  calcBalanceSummary(currentUser)
+
+  // Display Movements
+  displayTransaction(currentUser.movements);
+})
 
 /////////////////////////////////////////////////

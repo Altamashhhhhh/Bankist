@@ -177,4 +177,16 @@ btnClose.addEventListener("click" , (e)=>{
   else console.log("Wrong Credentials")
   inputCloseUsername.value = inputClosePin.value = "" ; 
 }) 
+
+btnLoan.addEventListener("click" , (e)=>{
+  e.preventDefault() ; 
+  const amount = Number(inputLoanAmount.value)
+  if(amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)){
+    currentAccount.movements.push(amount) ; 
+    console.log("Loan Granted")
+  }
+  updateUI(currentAccount)
+  inputLoanAmount.value = "" ; 
+
+})
 /////////////////////////////////////////////////

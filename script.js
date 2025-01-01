@@ -81,8 +81,12 @@ accounts.forEach(acc => {
 
 // containerMovements
 
-const displayTransaction = (acc) => {
-  acc?.movements.forEach((trans , i) => {
+const displayTransaction = (acc , sort = false) => {
+  containerMovements.innerHTML = "" ; 
+
+  const mov = sort ? acc.movements.slice().sort((a,b)=>b-a) : acc.movements ; 
+
+  mov.forEach((trans , i) => {
     const type = trans > 0 ? "deposit" : "withdrawal"
     const html = `
   <div class="movements__row">
@@ -188,5 +192,13 @@ btnLoan.addEventListener("click" , (e)=>{
   updateUI(currentAccount)
   inputLoanAmount.value = "" ; 
 
+})
+
+let sorted = false ; 
+
+btnSort.addEventListener("click" , (e)=>{
+  e.preventDefault() ; 
+  displayTransaction(currentAccount , sorted )
+  sorted = !sorted
 })
 /////////////////////////////////////////////////

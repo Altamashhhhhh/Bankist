@@ -76,13 +76,13 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // Add Usernames in Accounts
 
 accounts.forEach(acc => {
-  acc.username =  acc.owner.split(" ").map(name => name[0]).join("").toLowerCase()
+  acc.username =  acc?.owner.split(" ").map(name => name[0]).join("").toLowerCase()
 })
 
 // containerMovements
 
 const displayTransaction = (acc) => {
-  acc.movements.forEach((trans , i) => {
+  acc?.movements.forEach((trans , i) => {
     const type = trans > 0 ? "deposit" : "withdrawal"
     const html = `
   <div class="movements__row">
@@ -97,19 +97,19 @@ const displayTransaction = (acc) => {
 
 
 const calcBalanceDisplay = acc => {
-  acc.balance = acc.movements.reduce((acc, curr)=>acc + curr , 0)
+  acc.balance = acc?.movements.reduce((acc, curr)=>acc + curr , 0)
   labelBalance.innerText = `${acc.balance} €`
 }
 
 
 const calcBalanceSummary = account => {
-  const income = account.movements.filter(bal => bal > 0).reduce((acc, curr )=> acc + curr , 0 )
+  const income = account?.movements.filter(bal => bal > 0).reduce((acc, curr )=> acc + curr , 0 )
   labelSumIn.textContent = `${income}€`
 
-  const out = account.movements.filter(bal => bal < 0 ).reduce((acc, curr)=>acc+curr,0)
+  const out = account?.movements.filter(bal => bal < 0 ).reduce((acc, curr)=>acc+curr,0)
   labelSumOut.textContent = `${Math.abs(out)}€`
 
-  const interest = account.movements.filter(bal => bal > 0 ).map(bal => bal * account.interestRate / 100 ).filter(bal => bal >= 1 ).reduce((acc,curr)=> acc+curr , 0 ) ; 
+  const interest = account?.movements.filter(bal => bal > 0 ).map(bal => bal * account.interestRate / 100 ).filter(bal => bal >= 1 ).reduce((acc,curr)=> acc+curr , 0 ) ; 
   labelSumInterest.textContent = `${interest}€`
 }
 
@@ -159,8 +159,22 @@ btnTransfer.addEventListener("click" , (e)=>{
     receiverAcc?.movements.push(amount)
     console.log("Transaction Successfull")
     }
-   
+  
   updateUI(currentAccount)
+  inputTransferAmount.value = inputTransferTo.value = "" ;
 })
- 
+
+btnClose.addEventListener("click" , (e)=>{
+  e.preventDefault()
+  // inputCloseUsername   inputClosePin
+
+  if(inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin){
+    const index = accounts.findIndex(acc => acc.username === currentAccount.username)
+    accounts.splice(index , 1 )
+    containerApp.style.opacity = 0 ; 
+
+  }
+  else console.log("Wrong Credentials")
+  inputCloseUsername.value = inputClosePin.value = "" ; 
+}) 
 /////////////////////////////////////////////////

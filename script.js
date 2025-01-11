@@ -79,6 +79,23 @@ accounts.forEach(acc => {
   acc.username =  acc?.owner.split(" ").map(name => name[0]).join("").toLowerCase()
 })
 
+let currentAccount , timer ; 
+
+
+function randomDate(start , end , previousDate = null){
+  const startDate = previousDate ? Math.max(new Date(start).getTime() , previousDate.getTime() + 86400000) : new Date(start).getTime() ;
+  const endDate = new Date(end).getTime() ;  
+  const timestamp =  Math.floor(Math.random() * (endDate - startDate + 1 ) ) + startDate ; 
+  return new Date(timestamp)
+}
+let previousDate = null ; 
+const today = new Date()
+const todayFormatted = `${today.getFullYear()}-${String(today.getMonth() + 1 ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}` 
+
+const date = randomDate("2024-01-01" , todayFormatted , previousDate)
+previousDate = date
+
+
 // containerMovements
 
 const displayTransaction = (acc , sort = false) => {
@@ -91,7 +108,7 @@ const displayTransaction = (acc , sort = false) => {
     const html = `
   <div class="movements__row">
           <div class="movements__type movements__type--${type}">${i + 1 } ${type}</div>
-          <div class="movements__date">3 days ago</div>
+          <div class="movements__date">${randomDate("2024-01-01" , todayFormatted , previousDate).toLocaleDateString("en-GB")}</div>
           <div class="movements__value">${trans}€</div>
         </div>
         `;
@@ -117,6 +134,26 @@ const calcBalanceSummary = account => {
   labelSumInterest.textContent = `${interest}€`
 }
 
+function startLogoutTimer(){
+  let time = 300 ; 
+   timer = setInterval(()=>{
+    let minute = Math.trunc(time / 60)
+    let second = time % 60 ; 
+
+    labelTimer.textContent = `${String(minute).padStart(2 , "0")}:${String(second).padStart(2, "0")}`
+    time--
+
+    if(time === 0){
+      clearInterval(timer)
+      labelWelcome.textContent = "login to get started"
+      containerApp.style.opacity = 0 ; 
+    }
+
+  },1000)
+  return timer ; 
+
+}
+
 function updateUI(currentAccount){
  // Calculate Balance
  calcBalanceDisplay(currentAccount)
@@ -128,7 +165,7 @@ function updateUI(currentAccount){
  displayTransaction(currentAccount);
 }
 
-let currentAccount ; 
+
 
 btnLogin.addEventListener("click" , (e)=>{
   e.preventDefault() ; 
@@ -148,6 +185,10 @@ btnLogin.addEventListener("click" , (e)=>{
   }
   
   inputLoginPin.value = inputLoginUsername.value = "" ; 
+
+  if (timer) clearInterval(timer)
+  timer = startLogoutTimer()
+
   updateUI(currentAccount)
 })
 
@@ -164,6 +205,10 @@ btnTransfer.addEventListener("click" , (e)=>{
     console.log("Transaction Successfull")
     }
   
+  // Clear Timer 
+  clearInterval(timer)
+  timer = startLogoutTimer()
+
   updateUI(currentAccount)
   inputTransferAmount.value = inputTransferTo.value = "" ;
 })
@@ -189,6 +234,11 @@ btnLoan.addEventListener("click" , (e)=>{
     currentAccount.movements.push(amount) ; 
     console.log("Loan Granted")
   }
+
+  // Clear Timer 
+  clearInterval(timer)
+  timer = startLogoutTimer()
+  
   updateUI(currentAccount)
   inputLoanAmount.value = "" ; 
 
@@ -201,4 +251,13 @@ btnSort.addEventListener("click" , (e)=>{
   displayTransaction(currentAccount , sorted )
   sorted = !sorted
 })
+
+
+
+labelBalance.addEventListener("click" , ()=>{
+  const movementsUI = Array.from(document.querySelectorAll(".movements__value") , (el)=>Number(el.textContent.replace("€" , "")))
+  console.log(movementsUI)
+})
+
+labelDate.textContent = new Date().toLocaleDateString("en-GB")
 /////////////////////////////////////////////////
